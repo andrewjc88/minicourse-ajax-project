@@ -43,24 +43,27 @@ function loadData() {
     });
 
 
-    // // Wikipedia Ajax request
-    // "?callback=?"j
-    //
-    // $.ajax({
-    //     url: "",
-    //     crossDomain: ture,
-    //
-    // });
+    // Wikipedia Ajax request
+    // "?callback=?"
+    var wikiURL = 'http://en.wikipedia.org/w/api.php?action=opensearch&search=' + cityInput + '&format=json&callback=wikiCallback';
+    var wikiRequestTimeout = setTimeout(function(){
+        $wikiElem.text("failed to get wikipedia resource");
+    }, 8000);
 
+    $.ajax({
+        url: wikiURL,
+        dataType: "jsonp",
+        success: function( response ) {
+            var articleList = response[1];
 
-
-
-
-
-
-
-
-
+            for(var i=0; i < articleList.length; i++) {
+                var articleStr = articleList[i];
+                var url = 'http://en.wikipedia.org/wiki/' + articleStr;
+                $wikiElem.append('<li><a href="'+ url + '">' + articleStr + '</a></li>');
+            };
+            clearTimeout(wikiRequestTimeout);
+        }
+    });
 
     // clear out old data before new request, This was here when I got here...
     $wikiElem.text("");
